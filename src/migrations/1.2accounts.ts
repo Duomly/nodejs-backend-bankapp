@@ -36,7 +36,7 @@ export async function up(i: any) {
     },
     updatedAt: {
       type: Sequelize.DATE,
-    },
+    }
   });
 };
 
