@@ -17,6 +17,11 @@ export class AccountsService {
     }
 
     const newAccount: any = await this.accountsRepository.create<Accounts>(account);
-    return newAccount;
+    if (newAccount) {
+      return {
+        ...account,
+        id: newAccount.id,
+      }
+    }
   }
 }

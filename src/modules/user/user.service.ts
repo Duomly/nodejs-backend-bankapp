@@ -16,7 +16,10 @@ export class UsersService {
     const exists = await Users.findOne({ where: { Email: user.Email } });
 
     if (exists) {
-      throw new Error('This email is already used');
+      return {
+        success: false,
+        message: 'This email already exists.'
+      }
     } else {
       user.Salt = crypto.randomBytes(128).toString('base64');
       user.Password = crypto.createHmac('sha256', user.Password + user.Salt).digest('hex');
@@ -24,9 +27,24 @@ export class UsersService {
       const jwtToken = jwt.sign(user, process.env.JWT_KEY, jwtConfig);
       newUser.Token = jwtToken;
       if (newUser) {
-        this.accountsService.create(newUser.id);
+        const account = await this.accountsService.create(newUser.id);
+        const accounts = [account];
+        const response = {
+          user: {
+            id: newUser.id,
+            username: newUser.Username.trim(),
+            email: newUser.Email.trim(),
+            accounts,
+          },
+          token: jwtToken,
+          success: true,
+        }
+        return response;
       }
-      return newUser;
+      return { 
+        success: false,
+        message: 'Creating new user went wrong.',
+      }
     }
   }
 }
