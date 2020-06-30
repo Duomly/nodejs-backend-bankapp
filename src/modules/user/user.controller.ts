@@ -25,8 +25,10 @@ export class UsersController {
     return res.status(HttpStatus.OK).json(result);
   }
 
+  // Create authenticate endpoint
   @Post(':id')
   public async authenticate(@Param() params, @Res() res, @Headers() headers): Promise<any> {
+    // Get token from authorization header
     const token = headers.authorization.replace('Bearer ', '');
     const result: any = await this.usersService.authenticate(params.id, token);
     if (!result.success) {
